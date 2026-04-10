@@ -663,6 +663,86 @@
     background: #00e5ff15;
     border-color: #00e5ff25;
   }
+
+  /* Calculator modal */
+  .calc-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    background: rgba(4,5,8,0.85);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.35s cubic-bezier(0.16,1,0.3,1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+  }
+
+  .calc-overlay.open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .calc-modal {
+    position: relative;
+    width: 100%;
+    max-width: 500px;
+    height: 85vh;
+    max-height: 750px;
+    background: #08090e;
+    border: 1px solid #1a1d2e;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.6);
+    transform: translateY(20px) scale(0.96);
+    transition: transform 0.35s cubic-bezier(0.16,1,0.3,1);
+  }
+
+  .calc-overlay.open .calc-modal {
+    transform: translateY(0) scale(1);
+  }
+
+  .calc-modal iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    border-radius: 20px;
+  }
+
+  .calc-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 10;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: #0f1118dd;
+    border: 1px solid #1a1d2e;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .calc-close:hover {
+    background: #1a1d2e;
+    border-color: #2a2f4a;
+  }
+
+  .calc-close svg {
+    width: 16px;
+    height: 16px;
+    stroke: #b0b5d0;
+    stroke-width: 2;
+    fill: none;
+    stroke-linecap: round;
+  }
 </style>
 </head>
 <body>
@@ -670,8 +750,17 @@
 <div class="nav-toggle" id="navToggle" onclick="this.classList.toggle('open');document.getElementById('navMenu').classList.toggle('open')"><span></span></div>
 <div class="nav-menu" id="navMenu">
   <a class="nav-link" href="https://daniisantana4.github.io/trading-checklist/" data-app="checklist"><span class="nav-icon">✓</span>Daily Checklist</a>
-  <a class="nav-link" href="https://daniisantana4.github.io/CalcularPorcentajes/" data-app="calc"><span class="nav-icon">%</span>Position Sizing</a>
+  <a class="nav-link" href="#" data-app="calc" id="openCalc" onclick="event.preventDefault();document.getElementById('calcOverlay').classList.add('open');document.getElementById('navToggle').classList.remove('open');document.getElementById('navMenu').classList.remove('open');"><span class="nav-icon">%</span>Position Sizing</a>
   <a class="nav-link" href="https://daniisantana4.github.io/Confluence-Scorer/" data-app="confluence"><span class="nav-icon">◎</span>Confluence Scorer</a>
+</div>
+
+<div class="calc-overlay" id="calcOverlay">
+  <div class="calc-modal">
+    <div class="calc-close" onclick="document.getElementById('calcOverlay').classList.remove('open')">
+      <svg viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+    </div>
+    <iframe src="https://daniisantana4.github.io/CalcularPorcentajes/" loading="lazy"></iframe>
+  </div>
 </div>
 
 <div class="container">
@@ -874,6 +963,7 @@ document.querySelectorAll('.nav-link').forEach(l => {
   if (location.href.includes(l.dataset.app === 'checklist' ? 'trading-checklist' : l.dataset.app === 'calc' ? 'CalcularPorcentajes' : 'Confluence-Scorer') || (l.dataset.app === 'checklist' && location.pathname === '/')) l.classList.add('active');
 });
 document.addEventListener('click', e => { if (!e.target.closest('.nav-toggle') && !e.target.closest('.nav-menu')) { document.getElementById('navToggle').classList.remove('open'); document.getElementById('navMenu').classList.remove('open'); }});
+document.getElementById('calcOverlay').addEventListener('click', e => { if (e.target === e.currentTarget) e.currentTarget.classList.remove('open'); });
 </script>
 </body>
 </html>
