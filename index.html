@@ -567,16 +567,21 @@
     .check-item { padding: 14px 14px; gap: 12px; }
     .check-icon { width: 32px; height: 32px; font-size: 15px; }
   }
-  /* Nav menu */
-  .nav-toggle {
+  /* Toolbar */
+  .toolbar {
     position: fixed;
-    top: 16px;
-    right: 16px;
+    top: 14px;
+    right: 14px;
     z-index: 100;
-    width: 40px; height: 40px;
+    display: flex;
+    gap: 6px;
+  }
+
+  .tb-btn {
+    width: 38px; height: 38px;
     border-radius: 10px;
-    background: #0f1118ee;
-    border: 1px solid #1a1d2e;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     display: flex;
@@ -585,173 +590,195 @@
     cursor: pointer;
     transition: all 0.3s;
     -webkit-tap-highlight-color: transparent;
-  }
-  .nav-toggle:hover { border-color: #2a2f4a; background: #141620ee; }
-  .nav-toggle span {
-    display: block; width: 18px; height: 2px;
-    background: #b0b5d0;
-    border-radius: 2px;
+    text-decoration: none;
     position: relative;
-    transition: all 0.3s;
   }
-  .nav-toggle span::before,
-  .nav-toggle span::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    width: 100%; height: 2px;
-    background: #b0b5d0;
-    border-radius: 2px;
-    transition: all 0.3s;
-  }
-  .nav-toggle span::before { top: -6px; }
-  .nav-toggle span::after { top: 6px; }
-  .nav-toggle.open span { background: transparent; }
-  .nav-toggle.open span::before { top: 0; transform: rotate(45deg); }
-  .nav-toggle.open span::after { top: 0; transform: rotate(-45deg); }
 
-  .nav-menu {
+  .tb-btn:hover { border-color: var(--border-glow); background: var(--bg-card-hover); }
+
+  .tb-btn svg {
+    width: 16px; height: 16px;
+    stroke: var(--text-secondary, #b0b5d0);
+    stroke-width: 1.8;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .tb-btn .tb-label {
+    display: none;
+  }
+
+  /* Settings dropdown */
+  .settings-drop {
     position: fixed;
-    top: 64px;
-    right: 16px;
+    top: 60px;
+    right: 14px;
     z-index: 99;
-    background: #0f1118f0;
-    border: 1px solid #1a1d2e;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
     border-radius: 14px;
-    padding: 8px;
+    padding: 10px;
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     opacity: 0;
     transform: translateY(-8px) scale(0.96);
     pointer-events: none;
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
     box-shadow: 0 8px 32px rgba(0,0,0,0.4);
-    min-width: 220px;
+    min-width: 190px;
   }
-  .nav-menu.open {
+
+  .settings-drop.open {
     opacity: 1;
     transform: translateY(0) scale(1);
     pointer-events: auto;
   }
-  .nav-link {
+
+  .theme-toggle {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 10px 14px;
+    justify-content: space-between;
+    padding: 8px 10px;
     border-radius: 10px;
-    text-decoration: none;
-    font-family: 'Outfit', sans-serif;
-    font-size: 13px;
-    font-weight: 500;
-    color: #b0b5d0;
-    transition: all 0.2s;
-  }
-  .nav-link:hover { background: #1a1d2e; color: #f5f6fa; }
-  .nav-link.active { color: #00e5ff; background: #00e5ff12; }
-  .nav-link .nav-icon {
-    width: 28px; height: 28px;
-    border-radius: 7px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    background: #16182a;
-    border: 1px solid #1a1d2e;
-    flex-shrink: 0;
-  }
-  .nav-link.active .nav-icon {
-    background: #00e5ff15;
-    border-color: #00e5ff25;
-  }
-
-  /* Calculator modal */
-  .calc-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 200;
-    background: rgba(4,5,8,0.85);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.35s cubic-bezier(0.16,1,0.3,1);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 16px;
-  }
-
-  .calc-overlay.open {
-    opacity: 1;
-    pointer-events: auto;
-  }
-
-  .calc-modal {
-    position: relative;
-    width: 100%;
-    max-width: 500px;
-    height: 85vh;
-    max-height: 750px;
-    background: #08090e;
-    border: 1px solid #1a1d2e;
-    border-radius: 20px;
-    overflow: hidden;
-    box-shadow: 0 24px 80px rgba(0,0,0,0.6);
-    transform: translateY(20px) scale(0.96);
-    transition: transform 0.35s cubic-bezier(0.16,1,0.3,1);
-  }
-
-  .calc-overlay.open .calc-modal {
-    transform: translateY(0) scale(1);
-  }
-
-  .calc-modal iframe {
-    width: 100%;
-    height: 100%;
-    border: none;
-    border-radius: 20px;
-  }
-
-  .calc-close {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    z-index: 10;
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
-    background: #0f1118dd;
-    border: 1px solid #1a1d2e;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: background 0.2s;
     -webkit-tap-highlight-color: transparent;
   }
 
-  .calc-close:hover {
-    background: #1a1d2e;
-    border-color: #2a2f4a;
+  .theme-toggle:hover { background: var(--border); }
+
+  .theme-toggle-label {
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
 
-  .calc-close svg {
-    width: 16px;
-    height: 16px;
-    stroke: #b0b5d0;
+  .theme-toggle-label svg {
+    width: 16px; height: 16px;
+    stroke: var(--accent-amber, #ffb800);
     stroke-width: 2;
     fill: none;
     stroke-linecap: round;
   }
+
+  .toggle-track {
+    width: 40px; height: 22px;
+    border-radius: 11px;
+    background: var(--border);
+    position: relative;
+    transition: background 0.3s;
+    flex-shrink: 0;
+  }
+
+  .toggle-track::after {
+    content: '';
+    position: absolute;
+    top: 3px; left: 3px;
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: var(--text-secondary);
+    transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
+  }
+
+  .toggle-track.on {
+    background: var(--accent-cyan, #00e5ff);
+  }
+
+  .toggle-track.on::after {
+    left: 21px;
+    background: #fff;
+  }
+
+  /* Calculator modal */
+  .calc-overlay {
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(4,5,8,0.85);
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.35s cubic-bezier(0.16,1,0.3,1);
+    display: flex; align-items: center; justify-content: center; padding: 16px;
+  }
+  .calc-overlay.open { opacity: 1; pointer-events: auto; }
+  .calc-modal {
+    position: relative; width: 100%; max-width: 500px;
+    height: 85vh; max-height: 750px;
+    background: var(--bg-primary); border: 1px solid var(--border);
+    border-radius: 20px; overflow: hidden;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.6);
+    transform: translateY(20px) scale(0.96);
+    transition: transform 0.35s cubic-bezier(0.16,1,0.3,1);
+  }
+  .calc-overlay.open .calc-modal { transform: translateY(0) scale(1); }
+  .calc-modal iframe { width: 100%; height: 100%; border: none; border-radius: 20px; }
+  .calc-close {
+    position: absolute; top: 12px; right: 12px; z-index: 10;
+    width: 36px; height: 36px; border-radius: 10px;
+    background: #0f1118dd; border: 1px solid #1a1d2e;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: all 0.2s; -webkit-tap-highlight-color: transparent;
+  }
+  .calc-close:hover { background: #1a1d2e; border-color: #2a2f4a; }
+  .calc-close svg { width: 16px; height: 16px; stroke: #b0b5d0; stroke-width: 2; fill: none; stroke-linecap: round; }
+
+  /* Light theme */
+  body.light {
+    --bg-primary: #f2f3f6;
+    --bg-card: #ffffff;
+    --bg-card-hover: #f8f9fb;
+    --bg-check: #eef0f4;
+    --border: #d5d8e2;
+    --border-glow: #c0c4d4;
+    --text-primary: #0e1017;
+    --text-secondary: #4a4e5e;
+    --text-muted: #7b809a;
+    --accent-cyan: #0088cc;
+    --accent-cyan-dim: #0088cc15;
+    --accent-green: #00a86b;
+    --accent-green-dim: #00a86b15;
+    --accent-amber: #c98600;
+    --accent-amber-dim: #c9860012;
+    --accent-rose: #d42e4a;
+    --accent-purple: #7c5cbf;
+    --glow-cyan: none;
+    --glow-green: none;
+  }
+
+  body.light::before { background: none; }
+  body.light::after { background: none; }
+  body.light .progress-wrap { background: #f2f3f6; }
+  body.light .progress-wrap.stuck { box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+  body.light .score-panel { background: #f2f3f6; }
+  body.light .calc-overlay { background: rgba(0,0,0,0.4); }
+  body.light .settings-drop { box-shadow: 0 8px 32px rgba(0,0,0,0.12); }
+  body.light .link-btn { color: #0088cc; background: #0088cc12; border-color: #0088cc20; }
+  body.light .link-btn:hover { background: #0088cc20; border-color: #0088cc35; color: #005580; }
+  body.light .check-item.checked .link-btn { color: var(--text-muted); border-color: #d5d8e2; background: transparent; }
+  body.light .tag-macro { color: #a07800; border-color: #a0780025; background: #a0780010; }
+  body.light .tag-tech { color: #0077b3; border-color: #0077b325; background: #0077b310; }
+  body.light .tag-liq { color: #6b4fa0; border-color: #6b4fa025; background: #6b4fa010; }
+  body.light .tag-data { color: #00855a; border-color: #00855a25; background: #00855a10; }
+  body.light .tag-cond { color: #b32840; border-color: #b3284025; background: #b3284010; }
+  body.light .completion-banner { border-color: #00a86b30; background: linear-gradient(135deg, #00a86b08, #0088cc05); }
 </style>
 </head>
 <body>
 
-<div class="nav-toggle" id="navToggle" onclick="this.classList.toggle('open');document.getElementById('navMenu').classList.toggle('open')"><span></span></div>
-<div class="nav-menu" id="navMenu">
-  <a class="nav-link" href="https://daniisantana4.github.io/trading-checklist/" data-app="checklist"><span class="nav-icon">✓</span>Daily Checklist</a>
-  <a class="nav-link" href="#" data-app="calc" id="openCalc" onclick="event.preventDefault();document.getElementById('calcOverlay').classList.add('open');document.getElementById('navToggle').classList.remove('open');document.getElementById('navMenu').classList.remove('open');"><span class="nav-icon">%</span>Position Sizing</a>
-  <a class="nav-link" href="https://daniisantana4.github.io/Confluence-Scorer/" data-app="confluence"><span class="nav-icon">◎</span>Confluence Scorer</a>
+<div class="toolbar">
+  <div class="tb-btn" id="btnCalc" title="Calculadora"><svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="10" y2="10"/><line x1="14" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="10" y2="14"/><line x1="14" y1="14" x2="16" y2="14"/><line x1="8" y1="18" x2="16" y2="18"/></svg></div>
+  <a class="tb-btn" href="https://daniisantana4.github.io/Confluence-Scorer/" title="Confluence Scorer"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/></svg></a>
+  <div class="tb-btn" id="btnSettings" title="Ajustes"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></div>
+</div>
+
+<div class="settings-drop" id="settingsDrop">
+  <div class="theme-toggle" id="themeToggle">
+    <span class="theme-toggle-label"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>Modo claro</span>
+    <div class="toggle-track" id="themeTrack"></div>
+  </div>
 </div>
 
 <div class="calc-overlay" id="calcOverlay">
@@ -958,12 +985,27 @@ const obs = new IntersectionObserver(
 );
 obs.observe(progressEl);
 
-// Nav: highlight current
-document.querySelectorAll('.nav-link').forEach(l => {
-  if (location.href.includes(l.dataset.app === 'checklist' ? 'trading-checklist' : l.dataset.app === 'calc' ? 'CalcularPorcentajes' : 'Confluence-Scorer') || (l.dataset.app === 'checklist' && location.pathname === '/')) l.classList.add('active');
+// Toolbar
+document.getElementById('btnCalc').addEventListener('click', () => {
+  const t = document.body.classList.contains('light') ? '?theme=light' : '';
+  document.querySelector('.calc-modal iframe').src = 'https://daniisantana4.github.io/CalcularPorcentajes/' + t;
+  document.getElementById('calcOverlay').classList.add('open');
 });
-document.addEventListener('click', e => { if (!e.target.closest('.nav-toggle') && !e.target.closest('.nav-menu')) { document.getElementById('navToggle').classList.remove('open'); document.getElementById('navMenu').classList.remove('open'); }});
 document.getElementById('calcOverlay').addEventListener('click', e => { if (e.target === e.currentTarget) e.currentTarget.classList.remove('open'); });
+
+const settingsDrop = document.getElementById('settingsDrop');
+document.getElementById('btnSettings').addEventListener('click', e => { e.stopPropagation(); settingsDrop.classList.toggle('open'); });
+document.addEventListener('click', e => { if (!e.target.closest('#settingsDrop') && !e.target.closest('#btnSettings')) settingsDrop.classList.remove('open'); });
+
+// Theme
+const themeTrack = document.getElementById('themeTrack');
+function applyTheme(light) {
+  document.body.classList.toggle('light', light);
+  themeTrack.classList.toggle('on', light);
+  localStorage.setItem('theme', light ? 'light' : 'dark');
+}
+document.getElementById('themeToggle').addEventListener('click', () => applyTheme(!document.body.classList.contains('light')));
+if (localStorage.getItem('theme') === 'light') applyTheme(true);
 </script>
 </body>
 </html>
