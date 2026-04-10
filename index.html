@@ -567,9 +567,112 @@
     .check-item { padding: 14px 14px; gap: 12px; }
     .check-icon { width: 32px; height: 32px; font-size: 15px; }
   }
+  /* Nav menu */
+  .nav-toggle {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    z-index: 100;
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    background: #0f1118ee;
+    border: 1px solid #1a1d2e;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .nav-toggle:hover { border-color: #2a2f4a; background: #141620ee; }
+  .nav-toggle span {
+    display: block; width: 18px; height: 2px;
+    background: #b0b5d0;
+    border-radius: 2px;
+    position: relative;
+    transition: all 0.3s;
+  }
+  .nav-toggle span::before,
+  .nav-toggle span::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    width: 100%; height: 2px;
+    background: #b0b5d0;
+    border-radius: 2px;
+    transition: all 0.3s;
+  }
+  .nav-toggle span::before { top: -6px; }
+  .nav-toggle span::after { top: 6px; }
+  .nav-toggle.open span { background: transparent; }
+  .nav-toggle.open span::before { top: 0; transform: rotate(45deg); }
+  .nav-toggle.open span::after { top: 0; transform: rotate(-45deg); }
+
+  .nav-menu {
+    position: fixed;
+    top: 64px;
+    right: 16px;
+    z-index: 99;
+    background: #0f1118f0;
+    border: 1px solid #1a1d2e;
+    border-radius: 14px;
+    padding: 8px;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    opacity: 0;
+    transform: translateY(-8px) scale(0.96);
+    pointer-events: none;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    min-width: 220px;
+  }
+  .nav-menu.open {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+  }
+  .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: #b0b5d0;
+    transition: all 0.2s;
+  }
+  .nav-link:hover { background: #1a1d2e; color: #f5f6fa; }
+  .nav-link.active { color: #00e5ff; background: #00e5ff12; }
+  .nav-link .nav-icon {
+    width: 28px; height: 28px;
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    background: #16182a;
+    border: 1px solid #1a1d2e;
+    flex-shrink: 0;
+  }
+  .nav-link.active .nav-icon {
+    background: #00e5ff15;
+    border-color: #00e5ff25;
+  }
 </style>
 </head>
 <body>
+
+<div class="nav-toggle" id="navToggle" onclick="this.classList.toggle('open');document.getElementById('navMenu').classList.toggle('open')"><span></span></div>
+<div class="nav-menu" id="navMenu">
+  <a class="nav-link" href="https://daniisantana4.github.io/trading-checklist/" data-app="checklist"><span class="nav-icon">✓</span>Daily Checklist</a>
+  <a class="nav-link" href="https://daniisantana4.github.io/CalcularPorcentajes/" data-app="calc"><span class="nav-icon">%</span>Position Sizing</a>
+  <a class="nav-link" href="https://daniisantana4.github.io/Confluence-Scorer/" data-app="confluence"><span class="nav-icon">◎</span>Confluence Scorer</a>
+</div>
 
 <div class="container">
   <div class="header">
@@ -765,6 +868,12 @@ const obs = new IntersectionObserver(
   { threshold: [1], rootMargin: '-1px 0px 0px 0px' }
 );
 obs.observe(progressEl);
+
+// Nav: highlight current
+document.querySelectorAll('.nav-link').forEach(l => {
+  if (location.href.includes(l.dataset.app === 'checklist' ? 'trading-checklist' : l.dataset.app === 'calc' ? 'CalcularPorcentajes' : 'Confluence-Scorer') || (l.dataset.app === 'checklist' && location.pathname === '/')) l.classList.add('active');
+});
+document.addEventListener('click', e => { if (!e.target.closest('.nav-toggle') && !e.target.closest('.nav-menu')) { document.getElementById('navToggle').classList.remove('open'); document.getElementById('navMenu').classList.remove('open'); }});
 </script>
 </body>
 </html>
