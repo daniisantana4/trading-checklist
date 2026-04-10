@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daily Market Analysis</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-primary: #08090e;
+    --bg-card: #0f1118;
+    --bg-card-hover: #141620;
+    --bg-check: #16182a;
+    --border: #1a1d2e;
+    --border-glow: #2a2f4a;
+    --text-primary: #e8eaf0;
+    --text-secondary: #6b7194;
+    --text-muted: #3d4162;
+    --accent-cyan: #00e5ff;
+    --accent-cyan-dim: #00e5ff22;
+    --accent-green: #00ffaa;
+    --accent-green-dim: #00ffaa18;
+    --accent-amber: #ffb800;
+    --accent-amber-dim: #ffb80018;
+    --accent-rose: #ff3d71;
+    --accent-purple: #a78bfa;
+    --glow-cyan: 0 0 30px #00e5ff15, 0 0 60px #00e5ff08;
+    --glow-green: 0 0 30px #00ffaa15, 0 0 60px #00ffaa08;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: 'Outfit', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Animated background grid */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      linear-gradient(90deg, #ffffff03 1px, transparent 1px),
+      linear-gradient(0deg, #ffffff03 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(ellipse at 30% 20%, #00e5ff06 0%, transparent 50%),
+                radial-gradient(ellipse at 70% 80%, #00ffaa04 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+    animation: ambientDrift 20s ease-in-out infinite alternate;
+  }
+
+  @keyframes ambientDrift {
+    0% { transform: translate(0, 0) rotate(0deg); }
+    100% { transform: translate(-3%, 2%) rotate(1deg); }
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 40px 20px 60px;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 48px;
+    animation: fadeSlideDown 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    opacity: 0;
+  }
+
+  @keyframes fadeSlideDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .header-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent-cyan);
+    background: var(--accent-cyan-dim);
+    border: 1px solid #00e5ff20;
+    padding: 6px 16px;
+    border-radius: 100px;
+    margin-bottom: 20px;
+  }
+
+  .header-label .pulse-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent-cyan);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; box-shadow: 0 0 0 0 #00e5ff60; }
+    50% { opacity: 0.7; box-shadow: 0 0 0 6px #00e5ff00; }
+  }
+
+  .header h1 {
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    background: linear-gradient(135deg, #e8eaf0, #8b90b0);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 8px;
+  }
+
+  .header-date {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+
+  /* Progress bar */
+  .progress-wrap {
+    margin-bottom: 40px;
+    animation: fadeSlideDown 0.8s 0.15s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    opacity: 0;
+  }
+
+  .progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 10px;
+  }
+
+  .progress-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+  }
+
+  .progress-pct {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--text-primary);
+    transition: color 0.6s;
+  }
+
+  .progress-pct.complete {
+    color: var(--accent-green);
+  }
+
+  .progress-bar {
+    height: 4px;
+    background: var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--accent-cyan), var(--accent-green));
+    border-radius: 4px;
+    transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 0 12px #00e5ff30;
+  }
+
+  /* Checklist items */
+  .checklist { display: flex; flex-direction: column; gap: 12px; }
+
+  .check-item {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 20px;
+    cursor: pointer;
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    user-select: none;
+    opacity: 0;
+    transform: translateY(16px);
+  }
+
+  .check-item.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .check-item:hover {
+    background: var(--bg-card-hover);
+    border-color: var(--border-glow);
+    transform: translateY(-1px);
+  }
+
+  .check-item.checked {
+    border-color: #00ffaa25;
+    background: linear-gradient(135deg, #00ffaa06, transparent);
+  }
+
+  .check-item.checked:hover {
+    background: linear-gradient(135deg, #00ffaa0a, transparent);
+  }
+
+  /* Step number */
+  .step-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--text-muted);
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    letter-spacing: 1px;
+  }
+
+  .check-item.checked .step-num { color: #00ffaa40; }
+
+  /* Custom checkbox */
+  .checkbox-wrap {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    margin-top: 1px;
+    position: relative;
+  }
+
+  .checkbox {
+    width: 24px;
+    height: 24px;
+    border: 2px solid var(--text-muted);
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    background: var(--bg-check);
+  }
+
+  .check-item.checked .checkbox {
+    border-color: var(--accent-green);
+    background: var(--accent-green);
+    animation: checkBounce 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  @keyframes checkBounce {
+    0% { transform: scale(1); }
+    30% { transform: scale(0.85); }
+    60% { transform: scale(1.15); }
+    100% { transform: scale(1); }
+  }
+
+  .checkbox svg {
+    width: 14px;
+    height: 14px;
+    opacity: 0;
+    transform: scale(0) rotate(-45deg);
+    transition: all 0.3s 0.05s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .check-item.checked .checkbox svg {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+
+  .checkbox svg path {
+    stroke: var(--bg-primary);
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    fill: none;
+    stroke-dasharray: 20;
+    stroke-dashoffset: 20;
+    transition: stroke-dashoffset 0.35s 0.1s cubic-bezier(0.65, 0, 0.35, 1);
+  }
+
+  .check-item.checked .checkbox svg path {
+    stroke-dashoffset: 0;
+  }
+
+  /* Glow ring on check */
+  .checkbox::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 10px;
+    border: 2px solid var(--accent-green);
+    opacity: 0;
+    transform: scale(0.8);
+    transition: all 0.5s;
+  }
+
+  .check-item.checked .checkbox::after {
+    animation: glowRing 0.6s forwards;
+  }
+
+  @keyframes glowRing {
+    0% { opacity: 0.6; transform: scale(0.8); }
+    100% { opacity: 0; transform: scale(1.4); }
+  }
+
+  /* Content */
+  .check-content { flex: 1; min-width: 0; }
+
+  .check-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+    transition: color 0.3s;
+    line-height: 1.4;
+  }
+
+  .check-item.checked .check-title {
+    color: var(--text-secondary);
+  }
+
+  .check-desc {
+    font-size: 12.5px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    transition: color 0.3s;
+  }
+
+  .check-item.checked .check-desc {
+    color: var(--text-muted);
+  }
+
+  /* Tags */
+  .check-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 10px;
+  }
+
+  .tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.5px;
+    padding: 3px 10px;
+    border-radius: 100px;
+    border: 1px solid;
+  }
+
+  .tag-macro { color: var(--accent-amber); border-color: #ffb80025; background: var(--accent-amber-dim); }
+  .tag-tech { color: var(--accent-cyan); border-color: #00e5ff25; background: var(--accent-cyan-dim); }
+  .tag-liq { color: var(--accent-purple); border-color: #a78bfa25; background: #a78bfa12; }
+  .tag-data { color: var(--accent-green); border-color: #00ffaa25; background: var(--accent-green-dim); }
+  .tag-cond { color: var(--accent-rose); border-color: #ff3d7125; background: #ff3d7112; }
+
+  /* Icon in item */
+  .check-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    flex-shrink: 0;
+    font-size: 18px;
+    margin-top: -1px;
+  }
+
+  /* Strikethrough line animation */
+  .check-title-wrap {
+    position: relative;
+    display: inline;
+  }
+
+  .strike-line {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    height: 1.5px;
+    width: 0%;
+    background: var(--text-muted);
+    transition: width 0.5s 0.1s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .check-item.checked .strike-line { width: 100%; }
+
+  /* Completion banner */
+  .completion-banner {
+    text-align: center;
+    padding: 32px 20px;
+    margin-top: 24px;
+    border-radius: 16px;
+    border: 1px solid #00ffaa20;
+    background: linear-gradient(135deg, #00ffaa08, #00e5ff05);
+    opacity: 0;
+    transform: scale(0.96);
+    transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    pointer-events: none;
+  }
+
+  .completion-banner.show {
+    opacity: 1;
+    transform: scale(1);
+    pointer-events: auto;
+  }
+
+  .completion-icon {
+    font-size: 36px;
+    margin-bottom: 12px;
+    animation: completeSpin 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  @keyframes completeSpin {
+    from { transform: rotate(-180deg) scale(0); }
+    to { transform: rotate(0deg) scale(1); }
+  }
+
+  .completion-title {
+    font-size: 20px;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--accent-green), var(--accent-cyan));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 4px;
+  }
+
+  .completion-sub {
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+
+  /* Reset button */
+  .reset-btn {
+    display: block;
+    margin: 20px auto 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    background: none;
+    border: 1px solid var(--border);
+    padding: 8px 20px;
+    border-radius: 100px;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+
+  .reset-btn:hover {
+    color: var(--text-secondary);
+    border-color: var(--border-glow);
+  }
+
+  /* Timestamp on check */
+  .check-time {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: transparent;
+    margin-top: 6px;
+    transition: color 0.3s;
+  }
+
+  .check-item.checked .check-time {
+    color: var(--text-muted);
+  }
+
+  /* Link button */
+  .link-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.3px;
+    color: var(--accent-cyan);
+    background: var(--accent-cyan-dim);
+    border: 1px solid #00e5ff18;
+    padding: 5px 14px;
+    border-radius: 100px;
+    text-decoration: none;
+    margin-top: 10px;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .link-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, #00e5ff10, transparent);
+    transform: translateX(-100%);
+    transition: transform 0.5s;
+  }
+
+  .link-btn:hover {
+    background: #00e5ff18;
+    border-color: #00e5ff35;
+    color: #fff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px #00e5ff15;
+  }
+
+  .link-btn:hover::before {
+    transform: translateX(100%);
+  }
+
+  .link-btn svg {
+    width: 12px;
+    height: 12px;
+    stroke: currentColor;
+    stroke-width: 2;
+    fill: none;
+    flex-shrink: 0;
+  }
+
+  .check-item.checked .link-btn {
+    color: var(--text-muted);
+    border-color: #1a1d2e;
+    background: transparent;
+  }
+
+  /* Responsive */
+  @media (max-width: 500px) {
+    .container { padding: 24px 14px 40px; }
+    .header h1 { font-size: 24px; }
+    .check-item { padding: 14px 14px; gap: 12px; }
+    .check-icon { width: 32px; height: 32px; font-size: 15px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <div class="header-label"><span class="pulse-dot"></span> Pre-Market Routine</div>
+    <h1>Daily Analysis Checklist</h1>
+    <div class="header-date" id="dateDisplay"></div>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-header">
+      <span class="progress-label">Progreso</span>
+      <span class="progress-pct" id="progressPct">0%</span>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+  </div>
+
+  <div class="checklist" id="checklist"></div>
+
+  <div class="completion-banner" id="completionBanner">
+    <div class="completion-icon">⚡</div>
+    <div class="completion-title">Análisis completado</div>
+    <div class="completion-sub">Estás listo para operar hoy</div>
+  </div>
+
+  <button class="reset-btn" id="resetBtn">Reiniciar checklist</button>
+</div>
+
+<script>
+const items = [
+  {
+    title: "Contexto macroeconómico",
+    desc: "Revisar calendario económico. ¿Hay datos de empleo, IPC, PIB o discursos de la Fed hoy?",
+    icon: "🌐",
+    tags: [{ text: "MACRO", cls: "tag-macro" }],
+    link: "https://www.investing.com/economic-calendar/",
+    linkLabel: "Investing.com Calendar"
+  },
+  {
+    title: "Análisis técnico BTC — 4H",
+    desc: "TradingView Concorde. Estructura, soportes/resistencias clave, niveles de invalidación y tendencia.",
+    icon: "📊",
+    tags: [{ text: "TÉCNICO", cls: "tag-tech" }],
+    link: "https://www.tradingview.com/chart/?symbol=BITUNIX%3ABTCUSDT.P",
+    linkLabel: "TradingView — BTCUSDT.P"
+  },
+  {
+    title: "Mapas de liquidez — CoinGlass",
+    desc: "Identificar bloques de liquidez, zonas de concentración de stops y posibles barridos.",
+    icon: "🔥",
+    tags: [{ text: "LIQUIDEZ", cls: "tag-liq" }],
+    link: "https://www.coinglass.com/pro/futures/LiquidationHeatMap",
+    linkLabel: "CoinGlass Liquidation Map"
+  },
+  {
+    title: "Dominancia de BTC",
+    desc: "Revisar BTC.D en TradingView. ¿Flujo hacia alts o flight to BTC? Contexto para elegir pares.",
+    icon: "👑",
+    tags: [{ text: "DATA", cls: "tag-data" }],
+    link: "https://www.tradingview.com/chart/?symbol=CRYPTOCAP%3ABTC.D",
+    linkLabel: "TradingView — BTC.D"
+  },
+  {
+    title: "Flujos ETF de Bitcoin",
+    desc: "Consultar Farside Investors. Inflows/outflows del día anterior y tendencia semanal.",
+    icon: "🏦",
+    tags: [{ text: "DATA", cls: "tag-data" }, { text: "MACRO", cls: "tag-macro" }],
+    link: "https://farside.co.uk/btc/",
+    linkLabel: "Farside Investors"
+  },
+  {
+    title: "Crypto Bubbles",
+    desc: "Visión general del mercado. ¿Qué sectores/coins están moviéndose? ¿Hay alguna narrativa dominando?",
+    icon: "🫧",
+    tags: [{ text: "DATA", cls: "tag-data" }],
+    link: "https://cryptobubbles.net/",
+    linkLabel: "Crypto Bubbles"
+  },
+  {
+    title: "Oro y Petróleo",
+    desc: "Solo si el contexto macro lo requiere. Correlaciones risk-on/risk-off, tensiones geopolíticas.",
+    icon: "🛢️",
+    tags: [{ text: "MACRO", cls: "tag-macro" }, { text: "CONDICIONAL", cls: "tag-cond" }],
+    link: null,
+    linkLabel: null
+  },
+  {
+    title: "CME FedWatch Tool",
+    desc: "Probabilidades de cambio en tipos de interés. ¿Hay cambio en expectativas vs la sesión anterior?",
+    icon: "🎯",
+    tags: [{ text: "MACRO", cls: "tag-macro" }],
+    link: "https://www.cmegroup.com/markets/interest-rates/cme-fedwatch-tool.html",
+    linkLabel: "CME FedWatch"
+  },
+  {
+    title: "Noticias relevantes",
+    desc: "Scan rápido de titulares. Regulación, hacks, listings, earnings tech. ¿Algo que pueda mover el mercado?",
+    icon: "📰",
+    tags: [{ text: "MACRO", cls: "tag-macro" }, { text: "DATA", cls: "tag-data" }],
+    link: "https://www.coindesk.com/",
+    linkLabel: "CoinDesk"
+  }
+];
+
+const checklist = document.getElementById('checklist');
+const progressFill = document.getElementById('progressFill');
+const progressPct = document.getElementById('progressPct');
+const completionBanner = document.getElementById('completionBanner');
+const resetBtn = document.getElementById('resetBtn');
+const dateDisplay = document.getElementById('dateDisplay');
+
+// Date
+const now = new Date();
+const dayNames = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+const monthNames = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+dateDisplay.textContent = `${dayNames[now.getDay()]}, ${now.getDate()} de ${monthNames[now.getMonth()]} ${now.getFullYear()}`;
+
+// State
+const storageKey = 'trading-checklist-' + now.toISOString().slice(0,10);
+let state = JSON.parse(localStorage.getItem(storageKey) || '{}');
+
+function buildChecklist() {
+  checklist.innerHTML = '';
+  items.forEach((item, i) => {
+    const el = document.createElement('div');
+    el.className = 'check-item' + (state[i] ? ' checked' : '');
+    el.innerHTML = `
+      <span class="step-num">${String(i + 1).padStart(2, '0')}</span>
+      <div class="checkbox-wrap">
+        <div class="checkbox">
+          <svg viewBox="0 0 16 16"><path d="M3 8.5l3.5 3.5 6.5-7"/></svg>
+        </div>
+      </div>
+      <div class="check-icon">${item.icon}</div>
+      <div class="check-content">
+        <div class="check-title">
+          <span class="check-title-wrap">${item.title}<span class="strike-line"></span></span>
+        </div>
+        <div class="check-desc">${item.desc}</div>
+        <div class="check-tags">${item.tags.map(t => `<span class="tag ${t.cls}">${t.text}</span>`).join('')}</div>
+        ${item.link ? `<a href="${item.link}" target="_blank" rel="noopener" class="link-btn" onclick="event.stopPropagation()"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3" stroke-linecap="round" stroke-linejoin="round"/></svg>${item.linkLabel}</a>` : ''}
+        <div class="check-time">${state[i] ? '✓ ' + state[i] : ''}</div>
+      </div>
+    `;
+    el.addEventListener('click', () => toggle(i));
+    checklist.appendChild(el);
+
+    // Stagger entrance
+    setTimeout(() => el.classList.add('visible'), 60 + i * 70);
+  });
+  updateProgress();
+}
+
+function toggle(i) {
+  if (state[i]) {
+    delete state[i];
+  } else {
+    const t = new Date();
+    state[i] = t.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+  }
+  localStorage.setItem(storageKey, JSON.stringify(state));
+
+  const el = checklist.children[i];
+  el.classList.toggle('checked', !!state[i]);
+  el.querySelector('.check-time').textContent = state[i] ? '✓ ' + state[i] : '';
+  updateProgress();
+}
+
+function updateProgress() {
+  const done = Object.keys(state).length;
+  const total = items.length;
+  const pct = Math.round((done / total) * 100);
+  progressFill.style.width = pct + '%';
+  progressPct.textContent = pct + '%';
+  progressPct.classList.toggle('complete', pct === 100);
+  completionBanner.classList.toggle('show', pct === 100);
+}
+
+resetBtn.addEventListener('click', () => {
+  state = {};
+  localStorage.removeItem(storageKey);
+  buildChecklist();
+});
+
+buildChecklist();
+</script>
+</body>
+</html>
