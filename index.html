@@ -497,6 +497,13 @@
     color: var(--text-muted);
   }
 
+  .check-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 10px;
+  }
+
   /* Link button */
   .link-btn {
     display: inline-flex;
@@ -599,72 +606,74 @@ const items = [
     desc: "Revisar calendario económico. ¿Hay datos de empleo, IPC, PIB o discursos de la Fed hoy?",
     icon: "🌐",
     tags: [{ text: "MACRO", cls: "tag-macro" }],
-    link: "https://www.investing.com/economic-calendar/",
-    linkLabel: "Investing.com Calendar"
+    links: [
+      { url: "https://www.investing.com/economic-calendar/", label: "Investing.com" },
+      { url: "https://www.forexfactory.com/calendar", label: "ForexFactory" },
+      { url: "https://tradingeconomics.com/calendar", label: "TradingEconomics" },
+      { url: "https://fred.stlouisfed.org/", label: "FRED" }
+    ]
   },
   {
     title: "Análisis técnico BTC — 4H",
     desc: "TradingView Concorde. Estructura, soportes/resistencias clave, niveles de invalidación y tendencia.",
     icon: "📊",
     tags: [{ text: "TÉCNICO", cls: "tag-tech" }],
-    link: "https://www.tradingview.com/chart/?symbol=BITUNIX%3ABTCUSDT.P",
-    linkLabel: "TradingView — BTCUSDT.P"
+    links: [{ url: "https://www.tradingview.com/chart/?symbol=BITUNIX%3ABTCUSDT.P", label: "TradingView — BTCUSDT.P" }]
   },
   {
     title: "Mapas de liquidez — CoinGlass",
     desc: "Identificar bloques de liquidez, zonas de concentración de stops y posibles barridos.",
     icon: "🔥",
     tags: [{ text: "LIQUIDEZ", cls: "tag-liq" }],
-    link: "https://www.coinglass.com/pro/futures/LiquidationHeatMap",
-    linkLabel: "CoinGlass Liquidation Map"
+    links: [{ url: "https://www.coinglass.com/pro/futures/LiquidationHeatMap", label: "CoinGlass Liquidation Map" }]
   },
   {
     title: "Dominancia de BTC",
     desc: "Revisar BTC.D en TradingView. ¿Flujo hacia alts o flight to BTC? Contexto para elegir pares.",
     icon: "👑",
     tags: [{ text: "DATA", cls: "tag-data" }],
-    link: "https://www.tradingview.com/chart/?symbol=CRYPTOCAP%3ABTC.D",
-    linkLabel: "TradingView — BTC.D"
+    links: [{ url: "https://www.tradingview.com/chart/?symbol=CRYPTOCAP%3ABTC.D", label: "TradingView — BTC.D" }]
   },
   {
     title: "Flujos ETF de Bitcoin",
     desc: "Consultar Farside Investors. Inflows/outflows del día anterior y tendencia semanal.",
     icon: "🏦",
     tags: [{ text: "DATA", cls: "tag-data" }, { text: "MACRO", cls: "tag-macro" }],
-    link: "https://farside.co.uk/btc/",
-    linkLabel: "Farside Investors"
+    links: [{ url: "https://farside.co.uk/btc/", label: "Farside Investors" }]
   },
   {
     title: "Crypto Bubbles",
     desc: "Visión general del mercado. ¿Qué sectores/coins están moviéndose? ¿Hay alguna narrativa dominando?",
     icon: "🫧",
     tags: [{ text: "DATA", cls: "tag-data" }],
-    link: "https://cryptobubbles.net/",
-    linkLabel: "Crypto Bubbles"
+    links: [{ url: "https://cryptobubbles.net/", label: "Crypto Bubbles" }]
   },
   {
     title: "Oro y Petróleo",
     desc: "Solo si el contexto macro lo requiere. Correlaciones risk-on/risk-off, tensiones geopolíticas.",
     icon: "🛢️",
     tags: [{ text: "MACRO", cls: "tag-macro" }, { text: "CONDICIONAL", cls: "tag-cond" }],
-    link: null,
-    linkLabel: null
+    links: []
   },
   {
     title: "CME FedWatch Tool",
     desc: "Probabilidades de cambio en tipos de interés. ¿Hay cambio en expectativas vs la sesión anterior?",
     icon: "🎯",
     tags: [{ text: "MACRO", cls: "tag-macro" }],
-    link: "https://www.cmegroup.com/markets/interest-rates/cme-fedwatch-tool.html",
-    linkLabel: "CME FedWatch"
+    links: [{ url: "https://www.cmegroup.com/markets/interest-rates/cme-fedwatch-tool.html", label: "CME FedWatch" }]
   },
   {
     title: "Noticias relevantes",
     desc: "Scan rápido de titulares. Regulación, hacks, listings, earnings tech. ¿Algo que pueda mover el mercado?",
     icon: "📰",
     tags: [{ text: "MACRO", cls: "tag-macro" }, { text: "DATA", cls: "tag-data" }],
-    link: "https://www.coindesk.com/",
-    linkLabel: "CoinDesk"
+    links: [
+      { url: "https://www.coindesk.com/", label: "CoinDesk" },
+      { url: "https://cointelegraph.com/", label: "CoinTelegraph" },
+      { url: "https://www.theblock.co/", label: "The Block" },
+      { url: "https://decrypt.co/", label: "Decrypt" },
+      { url: "https://x.com/home", label: "X / Twitter" }
+    ]
   }
 ];
 
@@ -704,7 +713,7 @@ function buildChecklist() {
         </div>
         <div class="check-desc">${item.desc}</div>
         <div class="check-tags">${item.tags.map(t => `<span class="tag ${t.cls}">${t.text}</span>`).join('')}</div>
-        ${item.link ? `<a href="${item.link}" target="_blank" rel="noopener" class="link-btn" onclick="event.stopPropagation()"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3" stroke-linecap="round" stroke-linejoin="round"/></svg>${item.linkLabel}</a>` : ''}
+        ${item.links && item.links.length ? `<div class="check-links">${item.links.map(l => `<a href="${l.url}" target="_blank" rel="noopener" class="link-btn" onclick="event.stopPropagation()"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3" stroke-linecap="round" stroke-linejoin="round"/></svg>${l.label}</a>`).join('')}</div>` : ''}
         <div class="check-time">${state[i] ? '✓ ' + state[i] : ''}</div>
       </div>
     `;
